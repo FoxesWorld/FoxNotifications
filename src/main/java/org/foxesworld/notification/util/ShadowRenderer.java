@@ -1,4 +1,4 @@
-package raven.toast.util;
+package org.foxesworld.notification.util;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

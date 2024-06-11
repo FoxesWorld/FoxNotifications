@@ -1,11 +1,11 @@
-package raven.toast;
+package org.foxesworld.notification;
 
 import com.formdev.flatlaf.ui.FlatUIUtils;
 import com.formdev.flatlaf.util.Animator;
 import com.formdev.flatlaf.util.UIScale;
-import raven.toast.ui.ToastNotificationPanel;
-import raven.toast.util.NotificationHolder;
-import raven.toast.util.UIUtils;
+import org.foxesworld.notification.ui.ToastNotificationPanel;
+import org.foxesworld.notification.util.NotificationHolder;
+import org.foxesworld.notification.util.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,80 +16,12 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * <!-- FlatLaf Property -->
- * <p>
- * Toast.outlineWidth                   int         0       (default)
- * Toast.iconTextGap                    int         5       (default)
- * Toast.closeButtonGap                 int         5       (default)
- * Toast.arc                            int         20      (default)
- * Toast.horizontalGap                  int         10      (default)
- * <p>
- * Toast.limit                          int         -1      (default)   -1 as unlimited
- * Toast.duration                       long        2500    (default)
- * Toast.animation                      int         200     (default)
- * Toast.animationResolution            int         5       (default)
- * Toast.animationMove                  int         10      (default)
- * Toast.minimumWidth                   int         50      (default)
- * Toast.maximumWidth                   int         -1      (default)   -1 as not set
- * <p>
- * Toast.shadowColor                    Color
- * Toast.shadowOpacity                  float       0.1f    (default)
- * Toast.shadowInsets                   Insets      0,0,6,6 (default)
- * <p>
- * Toast.useEffect                      boolean     true    (default)
- * Toast.effectWidth                    float       0.5f    (default)   0.5f as 50%
- * Toast.effectOpacity                  float       0.2f    (default)   0 to 1
- * Toast.effectAlignment                String      left    (default)   left, right
- * Toast.effectColor                    Color
- * Toast.success.effectColor            Color
- * Toast.info.effectColor               Color
- * Toast.warning.effectColor            Color
- * Toast.error.effectColor              Color
- * <p>
- * Toast.outlineColor                   Color
- * Toast.foreground                     Color
- * Toast.background                     Color
- * <p>
- * Toast.success.outlineColor           Color
- * Toast.success.foreground             Color
- * Toast.success.background             Color
- * Toast.info.outlineColor              Color
- * Toast.info.foreground                Color
- * Toast.info.background                Color
- * Toast.warning.outlineColor           Color
- * Toast.warning.foreground             Color
- * Toast.warning.background             Color
- * Toast.error.outlineColor             Color
- * Toast.error.foreground               Color
- * Toast.error.background               Color
- * <p>
- * Toast.frameInsets                    Insets      10,10,10,10     (default)
- * Toast.margin                         Insets      8,8,8,8         (default)
- * <p>
- * Toast.showCloseButton                boolean     true            (default)
- * Toast.closeIconColor                 Color
- *
- * <p>
- * <!-- UIManager -->
- * <p>
- * Toast.success.icon                   Icon
- * Toast.info.icon                      Icon
- * Toast.warning.icon                   Icon
- * Toast.error.icon                     Icon
- * Toast.closeIcon                      Icon
- */
+@SuppressWarnings("unused")
+public class Notification {
 
-/**
- * @author Raven
- */
-public class Notifications {
-
-    private static Notifications instance;
     private JFrame frame;
     private final Map<Location, List<NotificationAnimation>> lists = new HashMap<>();
     private final NotificationHolder notificationHolder = new NotificationHolder();
-
     private ComponentListener windowEvent;
 
     private void installEvent(JFrame frame) {
@@ -115,22 +47,14 @@ public class Notifications {
         this.frame = frame;
     }
 
-    public static Notifications getInstance() {
-        if (instance == null) {
-            instance = new Notifications();
-        }
-        return instance;
-    }
-
     private int getCurrentShowCount(Location location) {
-        List list = lists.get(location);
+        List<NotificationAnimation> list = lists.get(location);
         return list == null ? 0 : list.size();
     }
 
     private synchronized void move(Rectangle rectangle) {
         for (Map.Entry<Location, List<NotificationAnimation>> set : lists.entrySet()) {
-            for (int i = 0; i < set.getValue().size(); i++) {
-                NotificationAnimation an = set.getValue().get(i);
+            for (NotificationAnimation an : set.getValue()) {
                 if (an != null) {
                     an.move(rectangle);
                 }
@@ -156,6 +80,10 @@ public class Notifications {
     }
 
     public void show(Type type, Location location, long duration, String message) {
+        initStart(new NotificationAnimation(type, location, duration, message), duration);
+    }
+
+    public void show(Type type, Rectangle location, long duration, String message) {
         initStart(new NotificationAnimation(type, location, duration, message), duration);
     }
 
@@ -195,8 +123,7 @@ public class Notifications {
     public void clearAll() {
         notificationHolder.clearHold();
         for (Map.Entry<Location, List<NotificationAnimation>> set : lists.entrySet()) {
-            for (int i = 0; i < set.getValue().size(); i++) {
-                NotificationAnimation an = set.getValue().get(i);
+            for (NotificationAnimation an : set.getValue()) {
                 if (an != null) {
                     an.close();
                 }
@@ -208,8 +135,7 @@ public class Notifications {
         notificationHolder.clearHold(location);
         List<NotificationAnimation> list = lists.get(location);
         if (list != null) {
-            for (int i = 0; i < list.size(); i++) {
-                NotificationAnimation an = list.get(i);
+            for (NotificationAnimation an : list) {
                 if (an != null) {
                     an.close();
                 }
@@ -260,14 +186,15 @@ public class Notifications {
 
     public class NotificationAnimation {
 
-        private JWindow window;
+        private final JWindow window;
         private Animator animator;
         private boolean show = true;
         private float animate;
         private int x;
         private int y;
         private Location location;
-        private long duration;
+        private Rectangle rectangle;
+        private final long duration;
         private Insets frameInsets;
         private int horizontalSpace;
         private int animationMove;
@@ -285,6 +212,26 @@ public class Notifications {
             window.setFocusableWindowState(false);
             window.pack();
             toastNotificationPanel.setDialog(window);
+        }
+
+        public NotificationAnimation(Type type, Rectangle rectangle, long duration, String message) {
+            installDefault();
+            this.rectangle = rectangle;
+            this.duration = duration;
+            window = new JWindow(frame);
+            ToastNotificationPanel toastNotificationPanel = createNotification(type, message);
+            toastNotificationPanel.putClientProperty(ToastClientProperties.TOAST_CLOSE_CALLBACK, (Consumer) o -> close());
+            window.setBackground(new Color(0, 0, 0, 0));
+            window.setContentPane(toastNotificationPanel);
+            window.setFocusableWindowState(false);
+            window.pack();
+            toastNotificationPanel.setDialog(window);
+
+            Rectangle frameBounds = frame.getBounds();
+            x = frameBounds.x + rectangle.x;
+            y = frameBounds.y + rectangle.y;
+            toastNotificationPanel.getWindow().setSize(rectangle.width, rectangle.height);
+            window.setLocation(x, y);
         }
 
         public NotificationAnimation(Location location, long duration, JComponent component) {
@@ -324,16 +271,14 @@ public class Notifications {
 
                 @Override
                 public void end() {
-                    if (show && close == false) {
-                        SwingUtilities.invokeLater(() -> {
-                            new Thread(() -> {
-                                sleep(duration);
-                                if (close == false) {
-                                    show = false;
-                                    animator.start();
-                                }
-                            }).start();
-                        });
+                    if (show && !close) {
+                        SwingUtilities.invokeLater(() -> new Thread(() -> {
+                            sleep(duration);
+                            if (!close) {
+                                show = false;
+                                animator.start();
+                            }
+                        }).start());
                     } else {
                         updateList(location, NotificationAnimation.this, false);
                         window.dispose();
@@ -346,50 +291,59 @@ public class Notifications {
         }
 
         private void installLocation() {
-            Insets insets;
-            Rectangle rec;
-            if (frame == null) {
-                insets = UIScale.scale(frameInsets);
-                rec = new Rectangle(new Point(0, 0), Toolkit.getDefaultToolkit().getScreenSize());
+            if (rectangle != null) {
+                // Координаты уже установлены в конструкторе
             } else {
-                insets = UIScale.scale(FlatUIUtils.addInsets(frameInsets, frame.getInsets()));
-                rec = frame.getBounds();
+                Insets insets = UIScale.scale(frameInsets);
+                Rectangle rec = frame.getBounds();
+                setupLocation(rec, insets);
             }
-            setupLocation(rec, insets);
             window.setOpacity(0f);
             window.setVisible(true);
         }
 
         private void move(Rectangle rec) {
-            Insets insets = UIScale.scale(FlatUIUtils.addInsets(frameInsets, frame.getInsets()));
+            Insets insets = UIScale.scale(frameInsets);
             setupLocation(rec, insets);
         }
 
         private void setupLocation(Rectangle rec, Insets insets) {
-            if (location == Location.TOP_LEFT) {
-                x = rec.x + insets.left;
-                y = rec.y + insets.top;
-                top = true;
-            } else if (location == Location.TOP_CENTER) {
-                x = rec.x + (rec.width - window.getWidth()) / 2;
-                y = rec.y + insets.top;
-                top = true;
-            } else if (location == Location.TOP_RIGHT) {
-                x = rec.x + rec.width - (window.getWidth() + insets.right);
-                y = rec.y + insets.top;
-                top = true;
-            } else if (location == Location.BOTTOM_LEFT) {
-                x = rec.x + insets.left;
-                y = rec.y + rec.height - (window.getHeight() + insets.bottom);
-                top = false;
-            } else if (location == Location.BOTTOM_CENTER) {
-                x = rec.x + (rec.width - window.getWidth()) / 2;
-                y = rec.y + rec.height - (window.getHeight() + insets.bottom);
-                top = false;
-            } else if (location == Location.BOTTOM_RIGHT) {
-                x = rec.x + rec.width - (window.getWidth() + insets.right);
-                y = rec.y + rec.height - (window.getHeight() + insets.bottom);
-                top = false;
+            if (rectangle != null) {
+                // Координаты уже установлены в конструкторе
+                return;
+            }
+
+            switch (location) {
+                case TOP_LEFT -> {
+                    x = rec.x + insets.left;
+                    y = rec.y + insets.top;
+                    top = true;
+                }
+                case TOP_CENTER -> {
+                    x = rec.x + (rec.width - window.getWidth()) / 2;
+                    y = rec.y + insets.top;
+                    top = true;
+                }
+                case TOP_RIGHT -> {
+                    x = rec.x + rec.width - (window.getWidth() + insets.right);
+                    y = rec.y + insets.top;
+                    top = true;
+                }
+                case BOTTOM_LEFT -> {
+                    x = rec.x + insets.left;
+                    y = rec.y + rec.height - (window.getHeight() + insets.bottom);
+                    top = false;
+                }
+                case BOTTOM_CENTER -> {
+                    x = rec.x + (rec.width - window.getWidth()) / 2;
+                    y = rec.y + rec.height - (window.getHeight() + insets.bottom);
+                    top = false;
+                }
+                case BOTTOM_RIGHT -> {
+                    x = rec.x + rec.width - (window.getWidth() + insets.right);
+                    y = rec.y + rec.height - (window.getHeight() + insets.bottom);
+                    top = false;
+                }
             }
             int am = UIScale.scale(top ? animationMove : -animationMove);
             int ly = (int) (getLocation(NotificationAnimation.this) + y + animate * am);
@@ -409,12 +363,11 @@ public class Notifications {
         private int getLocation(NotificationAnimation notification) {
             int height = 0;
             List<NotificationAnimation> list = lists.get(location);
-            for (int i = 0; i < list.size(); i++) {
-                NotificationAnimation n = list.get(i);
+            for (NotificationAnimation n : list) {
                 if (notification == n) {
                     return height;
                 }
-                double v = n.animate * (list.get(i).window.getHeight() + UIScale.scale(horizontalSpace));
+                double v = n.animate * (n.window.getHeight() + UIScale.scale(horizontalSpace));
                 height += top ? v : -v;
             }
             return height;
@@ -422,8 +375,7 @@ public class Notifications {
 
         private void update(NotificationAnimation except) {
             List<NotificationAnimation> list = lists.get(location);
-            for (int i = 0; i < list.size(); i++) {
-                NotificationAnimation n = list.get(i);
+            for (NotificationAnimation n : list) {
                 if (n != except) {
                     n.updateLocation(false);
                 }
@@ -444,8 +396,7 @@ public class Notifications {
         private void sleep(long l) {
             try {
                 Thread.sleep(l);
-            } catch (InterruptedException e) {
-                System.err.println(e);
+            } catch (InterruptedException ignored) {
             }
         }
 
@@ -457,4 +408,5 @@ public class Notifications {
             return duration;
         }
     }
+
 }

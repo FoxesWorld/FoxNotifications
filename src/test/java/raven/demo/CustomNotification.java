@@ -1,13 +1,13 @@
 package raven.demo;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import raven.toast.Notifications;
-import raven.toast.ToastClientProperties;
-import raven.toast.ui.ToastNotificationPanel;
+import org.foxesworld.notification.Notification;
+import org.foxesworld.notification.ToastClientProperties;
+import org.foxesworld.notification.ui.ToastNotificationPanel;
 
 import javax.swing.*;
 
-public class CustomNotification extends Notifications {
+public class CustomNotification extends Notification {
     @Override
     protected ToastNotificationPanel createNotification(Type type, String message) {
         ToastNotificationPanel toastNotificationPanel = super.createNotification(type, message);

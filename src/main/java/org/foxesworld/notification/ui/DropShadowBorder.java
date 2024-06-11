@@ -1,19 +1,16 @@
-package raven.toast.ui;
+package org.foxesworld.notification.ui;
 
 import com.formdev.flatlaf.FlatPropertiesLaf;
 import com.formdev.flatlaf.ui.FlatStylingSupport.Styleable;
 import com.formdev.flatlaf.ui.FlatUIUtils;
 import com.formdev.flatlaf.util.UIScale;
-import raven.toast.util.ShadowRenderer;
+import org.foxesworld.notification.util.ShadowRenderer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-/**
- * @author Raven
- */
 public class DropShadowBorder extends EmptyBorder {
 
     @Styleable

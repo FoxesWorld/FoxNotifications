@@ -4,8 +4,8 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import raven.toast.Notifications;
-import raven.toast.ui.ToastNotificationPanel;
+import org.foxesworld.notification.Notification;
+import org.foxesworld.notification.ui.ToastNotificationPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,19 +14,22 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 
 public class Test extends JFrame {
+
+    private  Notification notification;
     public Test() {
+        notification = new Notification();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 768);
         setLocationRelativeTo(null);
         getContentPane().setLayout(new FlowLayout(FlowLayout.LEADING));
         JButton button = new JButton("Show");
-        Notifications.getInstance().setJFrame(this);
+        notification.setJFrame(this);
         CustomNotification customNotification = new CustomNotification();
         customNotification.setJFrame(this);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Notifications.getInstance().show(getRandomType(), Notifications.Location.TOP_RIGHT, getRandomText());
+                notification.show(getRandomType(), Notification.Location.TOP_RIGHT, getRandomText());
             }
         });
         JButton cmdMode = new JButton("Mode Light");
@@ -49,34 +52,33 @@ public class Test extends JFrame {
         buttonClear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Notifications.getInstance().clearAll();
+                notification.clearAll();
             }
         });
         getContentPane().add(buttonClear);
 
         ToastNotificationPanel panel = new ToastNotificationPanel();
-        panel.set(Notifications.Type.INFO, "Hello my name is raven\nThis new Toast Panel Notification");
+        panel.set(Notification.Type.INFO, "Hello my name is raven\nThis new Toast Panel Notification");
+        this.notification.show(Notification.Type.INFO, new Rectangle(20,150, 300,45), 8000, "And my name is Aiden!");
         getContentPane().add(panel);
     }
 
 
-    private Notifications.Location getRandomLocation() {
+    private Notification.Location getRandomLocation() {
         Random ran = new Random();
         int a = ran.nextInt(6);
         if (a == 0) {
-            return Notifications.Location.TOP_LEFT;
+            return Notification.Location.TOP_LEFT;
         } else if (a == 1) {
-            return Notifications.Location.TOP_CENTER;
+            return Notification.Location.TOP_CENTER;
         } else if (a == 2) {
-            return Notifications.Location.TOP_RIGHT;
+            return Notification.Location.TOP_RIGHT;
         } else if (a == 3) {
-            return Notifications.Location.BOTTOM_LEFT;
+            return Notification.Location.BOTTOM_LEFT;
         } else if (a == 4) {
-            return Notifications.Location.BOTTOM_CENTER;
-        } else if (a == 5) {
-            return Notifications.Location.BOTTOM_RIGHT;
+            return Notification.Location.BOTTOM_CENTER;
         } else {
-            return Notifications.Location.BOTTOM_RIGHT;
+            return Notification.Location.BOTTOM_RIGHT;
         }
     }
 
@@ -98,17 +100,17 @@ public class Test extends JFrame {
         }
     }
 
-    private Notifications.Type getRandomType() {
+    private Notification.Type getRandomType() {
         Random ran = new Random();
         int a = ran.nextInt(4);
         if (a == 0) {
-            return Notifications.Type.SUCCESS;
+            return Notification.Type.SUCCESS;
         } else if (a == 1) {
-            return Notifications.Type.INFO;
+            return Notification.Type.INFO;
         } else if (a == 2) {
-            return Notifications.Type.WARNING;
+            return Notification.Type.WARNING;
         } else {
-            return Notifications.Type.ERROR;
+            return Notification.Type.ERROR;
         }
     }
 

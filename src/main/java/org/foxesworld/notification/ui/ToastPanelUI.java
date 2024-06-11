@@ -1,4 +1,4 @@
-package raven.toast.ui;
+package org.foxesworld.notification.ui;
 
 import static com.formdev.flatlaf.FlatClientProperties.*;
 
@@ -10,9 +10,8 @@ import com.formdev.flatlaf.ui.FlatUIUtils;
 import com.formdev.flatlaf.util.LoggingFacade;
 import com.formdev.flatlaf.util.UIScale;
 
-import static raven.toast.ToastClientProperties.*;
-
-import raven.toast.util.UIUtils;
+import org.foxesworld.notification.ToastClientProperties;
+import org.foxesworld.notification.util.UIUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -99,7 +98,7 @@ public class ToastPanelUI extends BasicPanelUI implements StyleableUI, PropertyC
         margin = UIUtils.getInsets(prefix + ".margin", new Insets(8, 8, 8, 8));
         showCloseButton = FlatUIUtils.getUIBoolean(prefix + ".showCloseButton", true);
         closeIconColor = FlatUIUtils.getUIColor(prefix + ".closeIconColor", new Color(150, 150, 150));
-        closeButtonIcon = UIUtils.getIcon(prefix + ".closeIcon", UIUtils.createIcon("raven/toast/svg/close.svg", closeIconColor, 0.75f));
+        closeButtonIcon = UIUtils.getIcon(prefix + ".closeIcon", UIUtils.createIcon("notification/close.svg", closeIconColor, 0.75f));
         useEffect = FlatUIUtils.getUIBoolean(prefix + ".useEffect", true);
         effectColor = FlatUIUtils.getUIColor(prefix + ".effectColor", "Component.focusColor");
         effectWidth = FlatUIUtils.getUIFloat(prefix + ".effectWidth", 0.5f);
@@ -130,7 +129,7 @@ public class ToastPanelUI extends BasicPanelUI implements StyleableUI, PropertyC
     @Override
     public void propertyChange(PropertyChangeEvent e) {
         switch (e.getPropertyName()) {
-            case TOAST_ICON: {
+            case ToastClientProperties.TOAST_ICON: {
                 JPanel c = (JPanel) e.getSource();
                 uninstallIconComponent(c);
                 installIconComponent(c);
@@ -138,7 +137,7 @@ public class ToastPanelUI extends BasicPanelUI implements StyleableUI, PropertyC
                 c.repaint();
                 break;
             }
-            case TOAST_COMPONENT: {
+            case ToastClientProperties.TOAST_COMPONENT: {
                 JPanel c = (JPanel) e.getSource();
                 uninstallComponent(c);
                 installComponent(c);
@@ -146,7 +145,7 @@ public class ToastPanelUI extends BasicPanelUI implements StyleableUI, PropertyC
                 c.repaint();
                 break;
             }
-            case TOAST_SHOW_CLOSE_BUTTON: {
+            case ToastClientProperties.TOAST_SHOW_CLOSE_BUTTON: {
                 JPanel c = (JPanel) e.getSource();
                 uninstallCloseButton(c);
                 installCloseButton(c);
@@ -167,7 +166,7 @@ public class ToastPanelUI extends BasicPanelUI implements StyleableUI, PropertyC
 
 
     private void installIconComponent(JComponent c) {
-        iconComponent = clientProperty(c, TOAST_ICON, null, JComponent.class);
+        iconComponent = clientProperty(c, ToastClientProperties.TOAST_ICON, null, JComponent.class);
         if (iconComponent != null) {
             installLayout(c);
             c.add(iconComponent);
@@ -183,7 +182,7 @@ public class ToastPanelUI extends BasicPanelUI implements StyleableUI, PropertyC
     }
 
     private void installComponent(JComponent c) {
-        component = FlatClientProperties.clientProperty(c, TOAST_COMPONENT, null, JComponent.class);
+        component = FlatClientProperties.clientProperty(c, ToastClientProperties.TOAST_COMPONENT, null, JComponent.class);
         if (component != null) {
             installLayout(c);
             c.add(component);
@@ -198,7 +197,7 @@ public class ToastPanelUI extends BasicPanelUI implements StyleableUI, PropertyC
     }
 
     private void installCloseButton(JComponent c) {
-        if (clientPropertyBoolean(c, TOAST_SHOW_CLOSE_BUTTON, showCloseButton)) {
+        if (clientPropertyBoolean(c, ToastClientProperties.TOAST_SHOW_CLOSE_BUTTON, showCloseButton)) {
             closeButton = createCloseButton(c);
             installLayout(c);
             c.add(closeButton);
@@ -225,7 +224,7 @@ public class ToastPanelUI extends BasicPanelUI implements StyleableUI, PropertyC
     }
 
     protected void closeButtonClicked(JComponent c) {
-        Object callback = c.getClientProperty(TOAST_CLOSE_CALLBACK);
+        Object callback = c.getClientProperty(ToastClientProperties.TOAST_CLOSE_CALLBACK);
         if (callback instanceof Runnable) {
             ((Runnable) callback).run();
         } else if (callback instanceof Consumer) {

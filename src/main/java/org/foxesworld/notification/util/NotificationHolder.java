@@ -1,22 +1,22 @@
-package raven.toast.util;
+package org.foxesworld.notification.util;
 
-import raven.toast.Notifications;
+import org.foxesworld.notification.Notification;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class NotificationHolder {
-    private final List<Notifications.NotificationAnimation> lists = new ArrayList<>();
+    private final List<Notification.NotificationAnimation> lists = new ArrayList<>();
     private final Object lock = new Object();
 
     public int getHoldCount() {
         return lists.size();
     }
 
-    public Notifications.NotificationAnimation getHold(Notifications.Location location) {
+    public Notification.NotificationAnimation getHold(Notification.Location location) {
         synchronized (lock) {
-            for (int i = 0; i < lists.size(); i++) {
-                Notifications.NotificationAnimation n = lists.get(i);
+            for (Notification.NotificationAnimation n : lists) {
                 if (n.getLocation() == location) {
                     return n;
                 }
@@ -25,13 +25,13 @@ public class NotificationHolder {
         }
     }
 
-    public void removeHold(Notifications.NotificationAnimation notificationAnimation) {
+    public void removeHold(Notification.NotificationAnimation notificationAnimation) {
         synchronized (lock) {
             lists.remove(notificationAnimation);
         }
     }
 
-    public void hold(Notifications.NotificationAnimation notificationAnimation) {
+    public void hold(Notification.NotificationAnimation notificationAnimation) {
         synchronized (lock) {
             lists.add(notificationAnimation);
         }
@@ -43,10 +43,10 @@ public class NotificationHolder {
         }
     }
 
-    public void clearHold(Notifications.Location location) {
+    public void clearHold(Notification.Location location) {
         synchronized (lock) {
             for (int i = 0; i < lists.size(); i++) {
-                Notifications.NotificationAnimation n = lists.get(i);
+                Notification.NotificationAnimation n = lists.get(i);
                 if (n.getLocation() == location) {
                     lists.remove(n);
                     i--;

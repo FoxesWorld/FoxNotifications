@@ -1,9 +1,9 @@
-package raven.toast.ui;
+package org.foxesworld.notification.ui;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import raven.toast.Notifications;
-import raven.toast.ToastClientProperties;
+import org.foxesworld.notification.Notification;
+import org.foxesworld.notification.ToastClientProperties;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +14,7 @@ public class ToastNotificationPanel extends JPanel {
     protected JLabel labelIcon;
     protected JTextPane textPane;
 
-    private Notifications.Type type;
+    private Notification.Type type;
 
     public ToastNotificationPanel() {
         installDefault();
@@ -59,7 +59,7 @@ public class ToastNotificationPanel extends JPanel {
         putClientProperty(ToastClientProperties.TOAST_COMPONENT, textPane);
     }
 
-    public void set(Notifications.Type type, String message) {
+    public void set(Notification.Type type, String message) {
         this.type = type;
         labelIcon.setIcon(getDefaultIcon());
         textPane.setText(message);
@@ -72,11 +72,11 @@ public class ToastNotificationPanel extends JPanel {
     }
 
     public Color getDefaultColor() {
-        if (type == Notifications.Type.SUCCESS) {
+        if (type == Notification.Type.SUCCESS) {
             return Color.decode("#2e7d32");
-        } else if (type == Notifications.Type.INFO) {
+        } else if (type == Notification.Type.INFO) {
             return Color.decode("#0288d1");
-        } else if (type == Notifications.Type.WARNING) {
+        } else if (type == Notification.Type.WARNING) {
             return Color.decode("#ed6c02");
         } else {
             return Color.decode("#d32f2f");
@@ -93,7 +93,7 @@ public class ToastNotificationPanel extends JPanel {
         if (icon != null) {
             return icon;
         }
-        FlatSVGIcon svgIcon = new FlatSVGIcon(getClass().getResource("/raven/toast/svg/" + key + ".svg"));
+        FlatSVGIcon svgIcon = new FlatSVGIcon(getClass().getResource("/notification/" + key + ".svg"));
         FlatSVGIcon.ColorFilter colorFilter = new FlatSVGIcon.ColorFilter();
         colorFilter.add(new Color(150, 150, 150), getDefaultColor());
         svgIcon.setColorFilter(colorFilter);
@@ -101,14 +101,18 @@ public class ToastNotificationPanel extends JPanel {
     }
 
     public String getKey() {
-        if (type == Notifications.Type.SUCCESS) {
+        if (type == Notification.Type.SUCCESS) {
             return "success";
-        } else if (type == Notifications.Type.INFO) {
+        } else if (type == Notification.Type.INFO) {
             return "info";
-        } else if (type == Notifications.Type.WARNING) {
+        } else if (type == Notification.Type.WARNING) {
             return "warning";
         } else {
             return "error";
         }
+    }
+
+    public JWindow getWindow() {
+        return window;
     }
 }

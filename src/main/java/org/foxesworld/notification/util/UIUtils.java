@@ -1,13 +1,10 @@
-package raven.toast.util;
+package org.foxesworld.notification.util;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * @author Raven
- */
 public class UIUtils {
 
     public static Icon getIcon(String key, Icon defaultValue) {
